@@ -28,7 +28,10 @@ export class News extends Component {
 
   async updateNews(pageNo) {
     this.props.setProgress(10);
-    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&q=${this.props.searchQuery}&apiKey=${this.props.apiKey}&page=${pageNo}&pageSize=${this.props.pageSize}`;
+    let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=${this.props.apiKey}&page=${pageNo}&pageSize=${this.props.pageSize}`;
+    if (this.props.searchQuery) {
+      url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&q=${this.props.searchQuery}&apiKey=${this.props.apiKey}&page=${pageNo}&pageSize=${this.props.pageSize}`;
+    }
     this.setState({ loading: true });
     let data = await fetch(url);
     let parsedData = await data.json();
@@ -38,6 +41,12 @@ export class News extends Component {
 
   async componentDidMount() {
     this.updateNews(1);
+  }
+
+  async componentDidUpdate(prevProps) {
+    if (prevProps.category !== this.props.category || prevProps.searchQuery !== this.props.searchQuery) {
+      this.updateNews();
+    }
   }
 
   // handleNext = async () => {
